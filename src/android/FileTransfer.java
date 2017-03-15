@@ -694,7 +694,7 @@ public class FileTransfer extends CordovaPlugin {
             {
                 error.put("body", body);
             }
-			LOG.e(LOG_TAG, httpStatus,throwable);
+			LOG.e(LOG_TAG, httpStatus.toString(),throwable);
             if (httpStatus != null) {
                 error.put("http_status", httpStatus);
 				
