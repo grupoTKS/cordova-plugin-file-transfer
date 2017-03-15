@@ -309,7 +309,7 @@ public class FileTransfer extends CordovaPlugin {
         int uriType = CordovaResourceApi.getUriType(targetUri);
         final boolean useHttps = uriType == CordovaResourceApi.URI_TYPE_HTTPS;
         if (uriType != CordovaResourceApi.URI_TYPE_HTTP && !useHttps) {
-            JSONObject error = createFileTransferError(INVALID_URL_ERR, source, target, null, 0, null);
+            JSONObject error = createFileTransferError(INVALID_URL_ERR, source, target, null, 1006, null);
             LOG.e(LOG_TAG, "Unsupported URI: " + targetUri);
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
             return;
@@ -546,11 +546,11 @@ public class FileTransfer extends CordovaPlugin {
 
                     context.sendPluginResult(new PluginResult(PluginResult.Status.OK, result.toJSONObject()));
                 } catch (FileNotFoundException e) {
-                    JSONObject error = createFileTransferError(FILE_NOT_FOUND_ERR, source, target, conn, e);
+                    JSONObject error = createFileTransferError(FILE_NOT_FOUND_ERR, source, target, conn, 1004);
                     LOG.e(LOG_TAG, error.toString(), e);
                     context.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
                 } catch (IOException e) {
-                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn, e);
+                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn,1003);
                     LOG.e(LOG_TAG, error.toString(), e);
                     LOG.e(LOG_TAG, "Failed after uploading " + totalBytes + " of " + fixedLength + " bytes.");
                     context.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
@@ -559,7 +559,7 @@ public class FileTransfer extends CordovaPlugin {
                     context.sendPluginResult(new PluginResult(PluginResult.Status.JSON_EXCEPTION));
                 } catch (Throwable t) {
                     // Shouldn't happen, but will
-                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn, t);
+                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, conn, 1002);
                     LOG.e(LOG_TAG, error.toString(), t);
                     context.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
                 } finally {
@@ -675,7 +675,7 @@ public class FileTransfer extends CordovaPlugin {
             }
         }
 
-        return createFileTransferError(errorCode, source, target, body, httpStatus, throwable);
+        return createFileTransferError(errorCode, source, target, body, 1001, throwable);
     }
 
         /**
@@ -748,7 +748,7 @@ public class FileTransfer extends CordovaPlugin {
         final boolean useHttps = uriType == CordovaResourceApi.URI_TYPE_HTTPS;
         final boolean isLocalTransfer = !useHttps && uriType != CordovaResourceApi.URI_TYPE_HTTP;
         if (uriType == CordovaResourceApi.URI_TYPE_UNKNOWN) {
-            JSONObject error = createFileTransferError(INVALID_URL_ERR, source, target, null, 0, null);
+            JSONObject error = createFileTransferError(INVALID_URL_ERR, source, target, null, 1012, null);
             LOG.e(LOG_TAG, "Unsupported URI: " + sourceUri);
             callbackContext.sendPluginResult(new PluginResult(PluginResult.Status.IO_EXCEPTION, error));
             return;
@@ -871,7 +871,7 @@ public class FileTransfer extends CordovaPlugin {
                             cached = true;
                             connection.disconnect();
                             LOG.d(LOG_TAG, "Resource not modified: " + source);
-                            JSONObject error = createFileTransferError(NOT_MODIFIED_ERR, source, target, connection, null);
+                            JSONObject error = createFileTransferError(NOT_MODIFIED_ERR, source, target, connection, 1012);
                             result = new PluginResult(PluginResult.Status.ERROR, error);
                         } else {
                             if (connection.getContentEncoding() == null || connection.getContentEncoding().equalsIgnoreCase("gzip")) {
@@ -944,7 +944,7 @@ public class FileTransfer extends CordovaPlugin {
                             if (fileEntry != null) {
                                 result = new PluginResult(PluginResult.Status.OK, fileEntry);
                             } else {
-                                JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, connection, null);
+                                JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, connection, 1011);
                                 LOG.e(LOG_TAG, "File plugin cannot represent download path");
                                 result = new PluginResult(PluginResult.Status.IO_EXCEPTION, error);
                             }
@@ -954,18 +954,18 @@ public class FileTransfer extends CordovaPlugin {
                         }
                     }
                 } catch (FileNotFoundException e) {
-                    JSONObject error = createFileTransferError(FILE_NOT_FOUND_ERR, source, target, connection, e);
+                    JSONObject error = createFileTransferError(FILE_NOT_FOUND_ERR, source, target, connection, 1010);
                     LOG.e(LOG_TAG, error.toString(), e);
                     result = new PluginResult(PluginResult.Status.IO_EXCEPTION, error);
                 } catch (IOException e) {
-                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, connection, e);
+                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, connection, 1009);
                     LOG.e(LOG_TAG, error.toString(), e);
                     result = new PluginResult(PluginResult.Status.IO_EXCEPTION, error);
                 } catch (JSONException e) {
                     LOG.e(LOG_TAG, e.getMessage(), e);
                     result = new PluginResult(PluginResult.Status.JSON_EXCEPTION);
                 } catch (Throwable e) {
-                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, connection, e);
+                    JSONObject error = createFileTransferError(CONNECTION_ERR, source, target, connection, 1008);
                     LOG.e(LOG_TAG, error.toString(), e);
                     result = new PluginResult(PluginResult.Status.IO_EXCEPTION, error);
                 } finally {
@@ -983,7 +983,7 @@ public class FileTransfer extends CordovaPlugin {
                     }
 
                     if (result == null) {
-                        result = new PluginResult(PluginResult.Status.ERROR, createFileTransferError(CONNECTION_ERR, source, target, connection, null));
+                        result = new PluginResult(PluginResult.Status.ERROR, createFileTransferError(CONNECTION_ERR, source, target, connection, 1007));
                     }
                     // Remove incomplete download.
                     if (!cached && result.getStatus() != PluginResult.Status.OK.ordinal() && file != null) {
